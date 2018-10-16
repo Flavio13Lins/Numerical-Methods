@@ -1,5 +1,5 @@
 # Numerical-Methods
-Numerical Methods Project in CIn UFPE 2018
+Numerical Methods Project at CIn UFPE 2018
 
 Goal: Implement a program that receives an input file, 
 calculates the specified method in it, and generates an
