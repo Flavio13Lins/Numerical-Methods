@@ -10,7 +10,7 @@ https://docs.google.com/document/d/1ZzVixoMKZFoYoxQcopg5EMDWU2e57xccHJjP9FWKw3U/
 
 // ----------------------------------------- // ----------------------------------- // ----------------------------------------- //
 
-p.py = provisional master file;
+[p.py](p.py) = provisional master file;
 
 RUNME = file to install requirements;
 
