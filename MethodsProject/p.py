@@ -41,8 +41,6 @@ def euler(entr_euler):
 
 
 def calc_eul_inv(y, t, h, fn):
-    print('inv', y, t, h, fn, 'inv')
-    print('r', y + h * aplica_fyt(calc_eul(y, t, h, fn), t + h, fn))
     return y + h * aplica_fyt(calc_eul(y, t, h, fn), t + h, fn)
 
 
@@ -358,7 +356,7 @@ def adam_bashforth_by_runge_kutta(entrada_adam_bashforth_runge_kutta):
     return
 
 
-def prep_param_to_multon(met, y0, y, t, h, pas, func, ordem):
+def prep_param_to_multon_and_form_inv(met, y0, y, t, h, pas, func, ordem):
     ordem = int(ordem)
     ys = list(range(ordem))
     ys[0] = str(y0)
@@ -386,14 +384,14 @@ def adam_multon_execute_out(param_multon):
     y = list(range(pas+1))
     for x in range(ordem-1):
         y[x] = float(param_multon.split()[1 + x])
-    print('y( {} ) = {}\nh = {} mult'.format(t0, y[0], h))
+    print('y( {} ) = {}\nh = {}'.format(t0, y[0], h))
     t0 = t0 + (ordem-1) * h
     if ordem == 1:
         # print('0 {}'.format(y[0]))
         for x in range(ordem-1, pas + 1):
             y[x] = calc_eul_inv(y[x - 1], t0, h, k)
         # y[x - 1] + h * aplica_fyt(calc_eul(y[x - 1], t0, h, k), t0 + h, k)
-            print('{} {} {}'.format(x, y[x], t0))
+            print('{} {}'.format(x, y[x]))
             t0 = t0 + h
     if ordem == 2:
         print('0 {}'.format(y[0]))
@@ -536,7 +534,7 @@ def adam_multon_by_euler(entrada_adam_multon_euler):
     print('Metodo Adan-Multon por Euler')
     [met, y0, t0, h, pas, func, ordem] = entrada_adam_multon_euler.split()
     yns = euler_retorno_n_primeiros(entrada_adam_multon_euler)
-    orded_param = prep_param_to_multon(met, y0, yns, t0, h, pas, func, ordem)
+    orded_param = prep_param_to_multon_and_form_inv(met, y0, yns, t0, h, pas, func, ordem)
     adam_multon_execute_out(orded_param)
     return
 
@@ -545,7 +543,7 @@ def adam_multon_by_euler_inverso(entrada_adam_multon_euler_inverso):
     print('Metodo Adan-Multon por Euler Inverso')
     [met, y0, t0, h, pas, func, ordem] = entrada_adam_multon_euler_inverso.split()
     yns = euler_inverso_retorno_n_primeiros(entrada_adam_multon_euler_inverso)
-    orded_param = prep_param_to_multon(met, y0, yns, t0, h, pas, func, ordem)
+    orded_param = prep_param_to_multon_and_form_inv(met, y0, yns, t0, h, pas, func, ordem)
     adam_multon_execute_out(orded_param)
     return
 
@@ -554,7 +552,7 @@ def adam_multon_by_euler_aprimorado(entrada_adam_multon_euler_apri):
     print('Metodo Adan-Multon por Euler Aprimorado')
     [met, y0, t0, h, pas, func, ordem] = entrada_adam_multon_euler_apri.split()
     yns = euler_apri_retorno_n_primeiros(entrada_adam_multon_euler_apri)
-    orded_param = prep_param_to_multon(met, y0, yns, t0, h, pas, func, ordem)
+    orded_param = prep_param_to_multon_and_form_inv(met, y0, yns, t0, h, pas, func, ordem)
     adam_multon_execute_out(orded_param)
     return
 
@@ -563,8 +561,141 @@ def adam_multon_by_runge_kutta(entrada_adam_multon_runge_kutta):
     print('Metodo Adan-Multon por Runge-Kutta')
     [met, y0, t0, h, pas, func, ordem] = entrada_adam_multon_runge_kutta.split()
     yns = runge_retorno_n_primeiros(entrada_adam_multon_runge_kutta)
-    orded_param = prep_param_to_multon(met, y0, yns, t0, h, pas, func, ordem)
+    orded_param = prep_param_to_multon_and_form_inv(met, y0, yns, t0, h, pas, func, ordem)
     adam_multon_execute_out(orded_param)
+    return
+
+
+def form_inv_execute_out(param_multon):
+    [t0, h, pas, func, ordem] = param_multon.split()[-5:]
+    t0 = float(t0)
+    h = float(h)
+    pas = int(pas)
+    k = parse_expr(func)
+    ordem = int(ordem)
+    y = list(range(pas+1))
+    for x in range(ordem-1):
+        y[x] = float(param_multon.split()[1 + x])
+    print('y( {} ) = {}\nh = {}'.format(t0, y[0], h))
+    t0 = t0 + (ordem-1) * h
+    if ordem == 2:
+        print('0 {}'.format(y[0]))
+        for x in range(1, ordem - 1):
+            print('{} {}'.format(x, y[x]))
+        for x in range(ordem - 1, pas + 1):
+            y[x] = calc_eul_inv(y[x - 1], t0-1*h, h, k)
+            print('{} {}'.format(x, y[x]))
+            t0 = t0 + h
+    if ordem == 3:
+        print('0 {}'.format(y[0]))
+        for x in range(1, ordem-1):
+            print('{} {}'.format(x, y[x]))
+        for x in range(ordem-1, pas + 1):
+            y[x] = aplica_fi2_fyt(y[x-1], y[x-2], t0-1*h, t0-2*h, h, k)
+            print('{} {}'.format(x, y[x]))
+            t0 = t0 + h
+    if ordem == 4:
+        print('0 {}'.format(y[0]))
+        for x in range(1, ordem-1):
+            print('{} {}'.format(x, y[x]))
+        for x in range(ordem-1, pas + 1):
+            y[x] = y[x - 1] + h * aplica_mt4_fyt(calc_eul(y[x - 1], t0-1*h, h, k),
+                                                 y[x - 1], y[x - 2], y[x - 3],
+                                                 t0, t0 - 1*h, t0 - 2*h, t0 - 3*h, k)
+            print('{} {}'.format(x, y[x]))
+            t0 = t0 + h
+    if ordem == 5:
+        print('0 {}'.format(y[0]))
+        for x in range(1, ordem-1):
+            print('{} {}'.format(x, y[x]))
+        for x in range(ordem-1, pas + 1):
+            y[x] = y[x - 1] + h * aplica_mt5_fyt(calc_eul(y[x - 1], t0-1*h, h, k),
+                                                 y[x - 1], y[x - 2], y[x - 3], y[x - 4],
+                                                 t0, t0 - 1*h, t0 - 2*h, t0 - 3*h, t0 - 4*h, k)
+            print('{} {}'.format(x, y[x]))
+            t0 = t0 + h
+    if ordem == 6:
+        print('0 {}'.format(y[0]))
+        for x in range(1, ordem-1):
+            print('{} {}'.format(x, y[x]))
+        for x in range(ordem-1, pas + 1):
+            y[x] = y[x - 1] + h * aplica_mt6_fyt(calc_eul(y[x - 1], t0-1*h, h, k),
+                                                 y[x - 1], y[x - 2], y[x - 3], y[x - 4], y[x - 5],
+                                                 t0, t0 - 1*h, t0 - 2*h, t0 - 3*h, t0 - 4*h, t0 - 5*h, k)
+            print('{} {}'.format(x, y[x]))
+            t0 = t0 + h
+    if ordem == 7:
+        print('0 {}'.format(y[0]))
+        for x in range(1, ordem-1):
+            print('{} {}'.format(x, y[x]))
+        for x in range(ordem-1, pas + 1):
+            y[x] = y[x - 1] + h * aplica_mt7_fyt(calc_eul(y[x - 1], t0 - 1*h, h, k),
+                                                 y[x - 1], y[x - 2], y[x - 3], y[x - 4], y[x - 5], y[x - 6],
+                                                 t0, t0 - 1*h, t0 - 2*h, t0 - 3*h, t0 - 4*h, t0 - 5*h, t0 - 6*h, k)
+            print('{} {}'.format(x, y[x]))
+            t0 = t0 + h
+    if ordem == 8:
+        print('0 {}'.format(y[0]))
+        for x in range(1, ordem-1):
+            print('{} {}'.format(x, y[x]))
+        for x in range(ordem-1, pas + 1):
+            y[x] = y[x - 1] + h * aplica_mt8_fyt(calc_eul(y[x - 1], t0-1*h, h, k),
+                                                 y[x - 1], y[x - 2], y[x - 3], y[x - 4], y[x - 5], y[x - 6], y[x - 7],
+                                                 t0, t0 - 1*h, t0 - 2*h, t0 - 3*h, t0 - 4*h, t0 - 5*h, t0 - 6*h, t0 - 7*h,
+                                                 k)
+            print('{} {}'.format(x, y[x]))
+            t0 = t0 + h
+    return
+
+
+def aplica_fi2_fyt(y1, y0, t1, t0, h, fn):
+    return (1 / 3) * (2 * h * aplica_fyt(calc_eul(y1, t1, h, fn), t1+h, fn)
+                      + 4 * y1 - y0)
+
+
+def aplica_fi3_fyt(y2, y1, y0, t2, t1, t0, h, fn):
+    return (1/11)
+
+
+def formula_inversa(entrada_formula_inversa):
+    print('Metodo Formula Inversa de Diferenciacao')
+    form_inv_execute_out(entrada_formula_inversa)
+    return
+
+
+def formula_inversa_by_euler(entrada_formula_inversa_euler):
+    print('Metodo Formula Inversa de Diferenciacao por Euler')
+    [met, y0, t0, h, pas, func, ordem] = entrada_formula_inversa_euler.split()
+    yns = euler_retorno_n_primeiros(entrada_formula_inversa_euler)
+    orded_param = prep_param_to_multon_and_form_inv(met, y0, yns, t0, h, pas, func, ordem)
+    form_inv_execute_out(orded_param)
+    return
+
+
+def formula_inversa_by_euler_inverso(entrada_formula_inversa_euler_inversa):
+    print('Metodo Formula Inversa de Diferenciacao por Euler')
+    [met, y0, t0, h, pas, func, ordem] = entrada_formula_inversa_euler_inversa.split()
+    yns = euler_inverso_retorno_n_primeiros(entrada_formula_inversa_euler_inversa)
+    orded_param = prep_param_to_multon_and_form_inv(met, y0, yns, t0, h, pas, func, ordem)
+    form_inv_execute_out(orded_param)
+    return
+
+
+def formula_inversa_by_euler_aprimorado(entrada_formula_inversa_euler_aprimorado):
+    print('Metodo Formula Inversa de Diferenciacao por Euler')
+    [met, y0, t0, h, pas, func, ordem] = entrada_formula_inversa_euler_aprimorado.split()
+    yns = euler_apri_retorno_n_primeiros(entrada_formula_inversa_euler_aprimorado)
+    orded_param = prep_param_to_multon_and_form_inv(met, y0, yns, t0, h, pas, func, ordem)
+    form_inv_execute_out(orded_param)
+    return
+
+
+def formula_inversa_by_runge_kutta(entrada_formula_inversa_runge_kutta):
+    print('Metodo Formula Inversa de Diferenciacao por Euler')
+    [met, y0, t0, h, pas, func, ordem] = entrada_formula_inversa_runge_kutta.split()
+    yns = runge_retorno_n_primeiros(entrada_formula_inversa_runge_kutta)
+    orded_param = prep_param_to_multon_and_form_inv(met, y0, yns, t0, h, pas, func, ordem)
+    form_inv_execute_out(orded_param)
     return
 
 
@@ -598,6 +729,16 @@ elif metodo == 'adam_multon_by_euler_aprimorado':
     adam_multon_by_euler_aprimorado(entrada)
 elif metodo == 'adam_multon_by_runge_kutta':
     adam_multon_by_runge_kutta(entrada)
+elif metodo == 'formula_inversa':
+    formula_inversa(entrada)
+elif metodo == 'formula_inversa_by_euler':
+    formula_inversa_by_euler(entrada)
+elif metodo == 'formula_inversa_by_euler_inverso':
+    formula_inversa_by_euler_inverso(entrada)
+elif metodo == 'formula_inversa_by_euler_aprimorado':
+    formula_inversa_by_euler_aprimorado(entrada)
+elif metodo == 'formula_inversa_by_runge_kutta':
+    formula_inversa_by_runge_kutta(entrada)
 else:
     print('.')
 
