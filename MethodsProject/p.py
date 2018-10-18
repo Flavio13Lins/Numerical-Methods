@@ -358,7 +358,25 @@ def adam_bashforth_by_runge_kutta(entrada_adam_bashforth_runge_kutta):
     return
 
 
-def adam_multon_execute_out(param_multon): # corrigir
+def prep_param_to_multon(met, y0, y, t, h, pas, func, ordem):
+    ordem = int(ordem)
+    ys = list(range(ordem))
+    ys[0] = str(y0)
+    for x in range(ordem-1):
+        ys[x+1] = str(y[x])
+    t = str(t)
+    h = str(h)
+    pas = str(pas)
+    func = str(func)
+    param_input = str(met)
+    for x in range(ordem):
+        param_input = param_input + ' ' + ys[x]
+    ordem = str(ordem)
+    param_input = param_input + ' ' + t + ' ' + h + ' ' + pas + ' ' + func + ' ' + ordem
+    return param_input
+
+
+def adam_multon_execute_out(param_multon):
     [t0, h, pas, func, ordem] = param_multon.split()[-5:]
     t0 = float(t0)
     h = float(h)
@@ -374,7 +392,7 @@ def adam_multon_execute_out(param_multon): # corrigir
         # print('0 {}'.format(y[0]))
         for x in range(ordem-1, pas + 1):
             y[x] = calc_eul_inv(y[x - 1], t0, h, k)
-                #  y[x - 1] + h * aplica_fyt(calc_eul(y[x - 1], t0, h, k), t0 + h, k)
+        # y[x - 1] + h * aplica_fyt(calc_eul(y[x - 1], t0, h, k), t0 + h, k)
             print('{} {} {}'.format(x, y[x], t0))
             t0 = t0 + h
     if ordem == 2:
@@ -393,7 +411,7 @@ def adam_multon_execute_out(param_multon): # corrigir
             print('{} {}'.format(x, y[x]))
         for x in range(ordem-1, pas + 1):
             y[x] = y[x - 1] + h * aplica_mt3_fyt(calc_eul(y[x - 1], t0-1*h, h, k),
-                                                           y[x - 1], y[x - 2],
+                                                 y[x - 1], y[x - 2],
                                                  t0, t0 - 1*h, t0 - 2*h, k)
             print('{} {}'.format(x, y[x]))
             t0 = t0 + h
@@ -402,9 +420,9 @@ def adam_multon_execute_out(param_multon): # corrigir
         for x in range(1, ordem-1):
             print('{} {}'.format(x, y[x]))
         for x in range(ordem-1, pas + 1):
-            y[x] = y[x - 1] + h * aplica_mt4_fyt(y[x - 1],
-                                                           y[x - 2], y[x - 3],
-                                                 t0 - 1*h, t0 - 2*h, t0 - 3*h, k)
+            y[x] = y[x - 1] + h * aplica_mt4_fyt(calc_eul(y[x - 1], t0-1*h, h, k),
+                                                 y[x - 1], y[x - 2], y[x - 3],
+                                                 t0, t0 - 1*h, t0 - 2*h, t0 - 3*h, k)
             print('{} {}'.format(x, y[x]))
             t0 = t0 + h
     if ordem == 5:
@@ -412,9 +430,9 @@ def adam_multon_execute_out(param_multon): # corrigir
         for x in range(1, ordem-1):
             print('{} {}'.format(x, y[x]))
         for x in range(ordem-1, pas + 1):
-            y[x] = y[x - 1] + h * aplica_mt5_fyt(y[x - 1],
-                                                           y[x - 2], y[x - 3], y[x - 4],
-                                                 t0 - 1*h, t0 - 2*h, t0 - 3*h, t0 - 4*h, k)
+            y[x] = y[x - 1] + h * aplica_mt5_fyt(calc_eul(y[x - 1], t0-1*h, h, k),
+                                                 y[x - 1], y[x - 2], y[x - 3], y[x - 4],
+                                                 t0, t0 - 1*h, t0 - 2*h, t0 - 3*h, t0 - 4*h, k)
             print('{} {}'.format(x, y[x]))
             t0 = t0 + h
     if ordem == 6:
@@ -422,9 +440,9 @@ def adam_multon_execute_out(param_multon): # corrigir
         for x in range(1, ordem-1):
             print('{} {}'.format(x, y[x]))
         for x in range(ordem-1, pas + 1):
-            y[x] = y[x - 1] + h * aplica_mt6_fyt(y[x - 1],
-                                                           y[x - 2], y[x - 3], y[x - 4], y[x - 5],
-                                                 t0 - 1*h, t0 - 2*h, t0 - 3*h, t0 - 4*h, t0 - 5*h, k)
+            y[x] = y[x - 1] + h * aplica_mt6_fyt(calc_eul(y[x - 1], t0-1*h, h, k),
+                                                 y[x - 1], y[x - 2], y[x - 3], y[x - 4], y[x - 5],
+                                                 t0, t0 - 1*h, t0 - 2*h, t0 - 3*h, t0 - 4*h, t0 - 5*h, k)
             print('{} {}'.format(x, y[x]))
             t0 = t0 + h
     if ordem == 7:
@@ -433,32 +451,20 @@ def adam_multon_execute_out(param_multon): # corrigir
             print('{} {}'.format(x, y[x]))
         for x in range(ordem-1, pas + 1):
             y[x] = y[x - 1] + h * aplica_mt7_fyt(calc_eul(y[x - 1], t0 - 1*h, h, k),
-                                                           y[x - 2], y[x - 3], y[x - 4], y[x - 5], y[x - 6],
-                                                 t0 - 1*h, t0 - 2*h, t0 - 3*h, t0 - 4*h, t0 - 5*h, t0 - 6*h, k)
-            print('{} {} {}'.format(x, y[x], t0))
+                                                 y[x - 1], y[x - 2], y[x - 3], y[x - 4], y[x - 5], y[x - 6],
+                                                 t0, t0 - 1*h, t0 - 2*h, t0 - 3*h, t0 - 4*h, t0 - 5*h, t0 - 6*h, k)
+            print('{} {}'.format(x, y[x]))
             t0 = t0 + h
     if ordem == 8:
         print('0 {}'.format(y[0]))
         for x in range(1, ordem-1):
             print('{} {}'.format(x, y[x]))
         for x in range(ordem-1, pas + 1):
-            y[x] = y[x - 1] + h * aplica_mt8_fyt(y[x - 1],
-                                                           y[x - 2], y[x - 3], y[x - 4], y[x - 5], y[x - 6], y[x - 7],
-                                                 t0 - 1*h, t0 - 2*h, t0 - 3*h, t0 - 4*h, t0 - 5*h, t0 - 6*h, t0 - 7*h,
+            y[x] = y[x - 1] + h * aplica_mt8_fyt(calc_eul(y[x - 1], t0-1*h, h, k),
+                                                 y[x - 1], y[x - 2], y[x - 3], y[x - 4], y[x - 5], y[x - 6], y[x - 7],
+                                                 t0, t0 - 1*h, t0 - 2*h, t0 - 3*h, t0 - 4*h, t0 - 5*h, t0 - 6*h, t0 - 7*h,
                                                  k)
-            print('{} {} {}'.format(x, y[x], t0))
-            t0 = t0 + h
-    if ordem == 9:
-        print('0 {}'.format(y[0]))
-        for x in range(1, ordem-1):
             print('{} {}'.format(x, y[x]))
-        for x in range(ordem-1, pas + 1):
-            y[x] = y[x - 1] + h * aplica_mt9_fyt(y[x - 1],
-                                                           y[x - 2], y[x - 3], y[x - 4], y[x - 5], y[x - 6], y[x - 7],
-                                                 y[x - 8],
-                                                 t0 - 1*h, t0 - 2*h, t0 - 3*h, t0 - 4*h, t0 - 5*h, t0 - 6*h, t0 - 7*h,
-                                                 t0 - 8*h, k)
-            print('{} {} {}'.format(x, y[x], t0))
             t0 = t0 + h
     return
 
@@ -491,7 +497,6 @@ def aplica_mt5_fyt(y4, y3, y2, y1, y0, t4, t3, t2, t1, t0, fn):
 
 
 def aplica_mt6_fyt(y5, y4, y3, y2, y1, y0, t5, t4, t3, t2, t1, t0, fn):
-    print('..', y5, y4, y3, y2, y1, y0, t5, t4, t3, t2, t1, t0, fn, '..')
     return (95 / 288) * aplica_fyt(y5, t5, fn) \
             + (1427 / 1440) * aplica_fyt(y4, t4, fn) \
             - (133 / 240) * aplica_fyt(y3, t3, fn) \
@@ -527,6 +532,42 @@ def adam_multon(entrada_adam_multon):
     return
 
 
+def adam_multon_by_euler(entrada_adam_multon_euler):
+    print('Metodo Adan-Multon por Euler')
+    [met, y0, t0, h, pas, func, ordem] = entrada_adam_multon_euler.split()
+    yns = euler_retorno_n_primeiros(entrada_adam_multon_euler)
+    orded_param = prep_param_to_multon(met, y0, yns, t0, h, pas, func, ordem)
+    adam_multon_execute_out(orded_param)
+    return
+
+
+def adam_multon_by_euler_inverso(entrada_adam_multon_euler_inverso):
+    print('Metodo Adan-Multon por Euler Inverso')
+    [met, y0, t0, h, pas, func, ordem] = entrada_adam_multon_euler_inverso.split()
+    yns = euler_inverso_retorno_n_primeiros(entrada_adam_multon_euler_inverso)
+    orded_param = prep_param_to_multon(met, y0, yns, t0, h, pas, func, ordem)
+    adam_multon_execute_out(orded_param)
+    return
+
+
+def adam_multon_by_euler_aprimorado(entrada_adam_multon_euler_apri):
+    print('Metodo Adan-Multon por Euler Aprimorado')
+    [met, y0, t0, h, pas, func, ordem] = entrada_adam_multon_euler_apri.split()
+    yns = euler_apri_retorno_n_primeiros(entrada_adam_multon_euler_apri)
+    orded_param = prep_param_to_multon(met, y0, yns, t0, h, pas, func, ordem)
+    adam_multon_execute_out(orded_param)
+    return
+
+
+def adam_multon_by_runge_kutta(entrada_adam_multon_runge_kutta):
+    print('Metodo Adan-Multon por Runge-Kutta')
+    [met, y0, t0, h, pas, func, ordem] = entrada_adam_multon_runge_kutta.split()
+    yns = runge_retorno_n_primeiros(entrada_adam_multon_runge_kutta)
+    orded_param = prep_param_to_multon(met, y0, yns, t0, h, pas, func, ordem)
+    adam_multon_execute_out(orded_param)
+    return
+
+
 entrada = str(input())
 metodo = entrada.split()[0]
 if metodo == 'euler':
@@ -549,16 +590,14 @@ elif metodo == 'adam_bashforth_by_runge_kutta':
     adam_bashforth_by_runge_kutta(entrada)
 elif metodo == 'adam_multon':
     adam_multon(entrada)
-    '''
-elif metodo == 'adam_multon_by_euler':Metodo Adan-Multon por Euler
-    # todo adam_multon_by_euler(entrada)
-elif metodo == 'adam_multon_by_euler_inverso':Metodo Adan-Multon por Euler Inverso
-    # todo adam_multon_by_euler_inverso(entrada)
-elif metodo == 'adam_multon_by_euler_aprimorado':Metodo Adan-Multon por Euler Aprimorado
-    # todo adam_multon_by_euler_aprimorado(entrada)
-elif metodo == 'adam_multon_by_runge_kutta':Metodo Adan-Multon por Runge-Kutta
-    # todo adam_multon_by_runge_kutta(entrada)
-    '''
+elif metodo == 'adam_multon_by_euler':
+    adam_multon_by_euler(entrada)
+elif metodo == 'adam_multon_by_euler_inverso':
+    adam_multon_by_euler_inverso(entrada)
+elif metodo == 'adam_multon_by_euler_aprimorado':
+    adam_multon_by_euler_aprimorado(entrada)
+elif metodo == 'adam_multon_by_runge_kutta':
+    adam_multon_by_runge_kutta(entrada)
 else:
     print('.')
 
