@@ -36,4 +36,5 @@ formula_inversa 1.0 1.6090418 2.5053299 3.8301388 0 0.1 20 1-t+4*y 5
 formula_inversa_by_euler 1.0 0 0.1 20 1-t+4*y 2
 formula_inversa_by_euler 1.0 0 0.1 20 1-t+4*y 3
 formula_inversa_by_euler 1.0 0 0.1 20 1-t+4*y 4
-formula_inversa_by_euler 1.0 0 0.1 20 1-t+4*y 8
+formula_inversa_by_euler 1.0 0 0.1 20 1-t+4*y 7
+
