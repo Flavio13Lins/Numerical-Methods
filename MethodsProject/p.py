@@ -26,15 +26,21 @@ def euler_retorno_n_primeiros(param):
 
 def euler(entr_euler):
     [y0, t0, pas, func] = entr_euler.split()[1:]
-    print('Metodo de Euler')
+    o = open('saida.txt', 'a')
+    o.write('Metodo de Euler\n')
+    o.close()
     h = 0.1
     y0 = float(y0)
     t0 = float(t0)
     pas = int(pas)
     fn = parse_expr(func)
-    print('y( {} ) = {}\nh = {}'.format(t0, y0, h))
+    o = open('saida.txt', 'a')
+    o.write('y( {} ) = {}\nh = {}\n'.format(t0, y0, h))
+    o.close()
     for x in range(0, pas + 1):
-        print('{} {}'.format(x, y0))
+        o = open('saida.txt', 'a')
+        o.write('{} {}\n'.format(x, y0))
+        o.close()
         y0 = calc_eul(y0, t0, h, fn)
         t0 = t0 + h
     return
@@ -62,15 +68,21 @@ def euler_inverso_retorno_n_primeiros(param):
 
 def euler_inverso(entr_euler_inv):
     [y0, t0, h, pas, func] = entr_euler_inv.split()[1:]
-    print('Metodo de Euler Inverso')
+    o = open('saida.txt', 'a')
+    o.write('Metodo de Euler Inverso\n')
+    o.close()
     y0 = float(y0)
     t0 = float(t0)
     h = float(h)
     pas = int(pas)
     fn = parse_expr(func)
-    print('y( {} ) = {}\nh = {}'.format(t0, y0, h))
+    o = open('saida.txt', 'a')
+    o.write('y( {} ) = {}\nh = {}\n'.format(t0, y0, h))
+    o.close()
     for x in range(0, pas + 1):
-        print('{} {}'.format(x, y0))
+        o = open('saida.txt', 'a')
+        o.write('{} {}\n'.format(x, y0))
+        o.close()
         # y0 = sympy.solvers.solve(y0 + (h * fn.subs(t, t0+h)) - 'y', 'y')[0]  # aproximaçao melhor como do livro
         y0 = calc_eul_inv(y0, t0, h, fn)  # aproximaçao como pdf dos monitores
         t0 = t0 + h
@@ -100,15 +112,21 @@ def euler_apri_retorno_n_primeiros(param):
 
 def euler_aprimorado(entr_euler_apri):
     [y0, t0, h, pas, func] = entr_euler_apri.split()[1:]
-    print('Metodo de Euler Aprimorado')
+    o = open('saida.txt', 'a')
+    o.write('Metodo de Euler Aprimorado\n')
+    o.close()
     y0 = float(y0)
     t0 = float(t0)
     h = float(h)
     pas = int(pas)
     fn = parse_expr(func)
-    print('y( {} ) = {}\nh = {}'.format(t0, y0, h))
+    o = open('saida.txt', 'a')
+    o.write('y( {} ) = {}\nh = {}\n'.format(t0, y0, h))
+    o.close()
     for x in range(0, pas + 1):
-        print('{} {}'.format(x, y0))
+        o = open('saida.txt', 'a')
+        o.write('{} {}\n'.format(x, y0))
+        o.close()
         y0 = calc_eul_apri(y0, t0, h, fn)
         t0 = t0 + h
     return
@@ -139,17 +157,179 @@ def runge_retorno_n_primeiros(param):
 
 def runge_kutta(entr_runge_kutta):
     [y0, t0, h, pas, func] = entr_runge_kutta.split()[1:]
-    print('Metodo de Runge-Kutta')
+    o = open('saida.txt', 'a')
+    o.write('Metodo de Runge-Kutta\n')
+    o.close()
     y0 = float(y0)
     t0 = float(t0)
     h = float(h)
     pas = int(pas)
     fn = parse_expr(func)
-    print('y( {} ) = {}\nh = {}'.format(t0, y0, h))
+    o = open('saida.txt', 'a')
+    o.write('y( {} ) = {}\nh = {}\n'.format(t0, y0, h))
+    o.close()
     for x in range(0, pas + 1):
-        print('{} {}'.format(x, y0))
+        o = open('saida.txt', 'a')
+        o.write('{} {}\n'.format(x, y0))
+        o.close()
         y0 = calc_runge(y0, t0, h, fn)
         t0 = t0 + h
+    return
+
+
+def prep_param_to_bashforth(met, y0, y, t, h, pas, func, ordem):
+    ordem = int(ordem)
+    ys = list(range(ordem + 1))
+    ys[0] = str(y0)
+    for x in range(ordem):
+        ys[x + 1] = str(y[x])
+    t = str(t)
+    h = str(h)
+    pas = str(pas)
+    func = str(func)
+    param_input = str(met)
+    for x in range(ordem):
+        param_input = param_input + ' ' + ys[x]
+    ordem = str(ordem)
+    param_input = param_input + ' ' + t + ' ' + h + ' ' + pas + ' ' + func + ' ' + ordem
+    return param_input
+
+
+def adam_bashforth_execute_out(param_bash):
+    [t0, h, pas, func, ordem] = param_bash.split()[-5:]
+    t0 = float(t0)
+    h = float(h)
+    pas = int(pas)
+    k = parse_expr(func)
+    ordem = int(ordem)
+    y = list(range(pas + 1))
+    for x in range(ordem):
+        y[x] = float(param_bash.split()[1 + x])
+    o = open('saida.txt', 'a')
+    o.write('y( {} ) = {}\nh = {}\n'.format(t0, y[0], h))
+    o.close()
+    t0 = t0 + ordem * h
+    if ordem == 1:
+        o = open('saida.txt', 'a')
+        o.write('0 {}\n'.format(y[0]))
+        o.close()
+        for x in range(ordem, pas + 1):
+            y[x] = calc_eul(y[x - 1], t0 - 1 * h, h, k)
+            o = open('saida.txt', 'a')
+            o.write('{} {}\n'.format(x, y[x]))
+            o.close()
+            t0 = t0 + h
+    if ordem == 2:
+        o = open('saida.txt', 'a')
+        o.write('0 {}\n'.format(y[0]))
+        o.close()
+        for x in range(1, ordem):
+            o = open('saida.txt', 'a')
+            o.write('{} {}\n'.format(x, y[x]))
+            o.close()
+        for x in range(ordem, pas + 1):
+            y[x] = y[x - 1] + h * aplica_bf2_fyt(y[x - 1], y[x - 2],
+                                                 t0 - 1 * h, t0 - 2 * h, k)
+            o = open('saida.txt', 'a')
+            o.write('{} {}\n'.format(x, y[x]))
+            o.close()
+            t0 = t0 + h
+    if ordem == 3:
+        o = open('saida.txt', 'a')
+        o.write('0 {}\n'.format(y[0]))
+        o.close()
+        for x in range(1, ordem):
+            o = open('saida.txt', 'a')
+            o.write('{} {}\n'.format(x, y[x]))
+            o.close()
+        for x in range(ordem, pas + 1):
+            y[x] = y[x - 1] + h * aplica_bf3_fyt(y[x - 1], y[x - 2], y[x - 3],
+                                                 t0 - 1 * h, t0 - 2 * h, t0 - 3 * h, k)
+            o = open('saida.txt', 'a')
+            o.write('{} {}\n'.format(x, y[x]))
+            o.close()
+            t0 = t0 + h
+    if ordem == 4:
+        o = open('saida.txt', 'a')
+        o.write('0 {}\n'.format(y[0]))
+        o.close()
+        for x in range(1, ordem):
+            o = open('saida.txt', 'a')
+            o.write('{} {}\n'.format(x, y[x]))
+            o.close()
+        for x in range(ordem, pas + 1):
+            y[x] = y[x - 1] + h * aplica_bf4_fyt(y[x - 1], y[x - 2], y[x - 3], y[x - 4],
+                                                 t0 - 1 * h, t0 - 2 * h, t0 - 3 * h, t0 - 4 * h, k)
+            o = open('saida.txt', 'a')
+            o.write('{} {}\n'.format(x, y[x]))
+            o.close()
+            t0 = t0 + h
+    if ordem == 5:
+        o = open('saida.txt', 'a')
+        o.write('0 {}\n'.format(y[0]))
+        o.close()
+        for x in range(1, ordem):
+            o = open('saida.txt', 'a')
+            o.write('{} {}\n'.format(x, y[x]))
+            o.close()
+        for x in range(ordem, pas + 1):
+            y[x] = y[x - 1] + h * aplica_bf5_fyt(y[x - 1], y[x - 2], y[x - 3], y[x - 4], y[x - 5],
+                                                 t0 - 1 * h, t0 - 2 * h, t0 - 3 * h, t0 - 4 * h, t0 - 5 * h, k)
+            o = open('saida.txt', 'a')
+            o.write('{} {}\n'.format(x, y[x]))
+            o.close()
+            t0 = t0 + h
+    if ordem == 6:
+        o = open('saida.txt', 'a')
+        o.write('0 {}\n'.format(y[0]))
+        o.close()
+        for x in range(1, ordem):
+            o = open('saida.txt', 'a')
+            o.write('{} {}\n'.format(x, y[x]))
+            o.close()
+        for x in range(ordem, pas + 1):
+            y[x] = y[x - 1] + h * aplica_bf6_fyt(y[x - 1], y[x - 2], y[x - 3], y[x - 4], y[x - 5], y[x - 6],
+                                                 t0 - 1 * h, t0 - 2 * h, t0 - 3 * h, t0 - 4 * h, t0 - 5 * h, t0 - 6 * h,
+                                                 k)
+            o = open('saida.txt', 'a')
+            o.write('{} {}\n'.format(x, y[x]))
+            o.close()
+            t0 = t0 + h
+    if ordem == 7:
+        o = open('saida.txt', 'a')
+        o.write('0 {}\n'.format(y[0]))
+        o.close()
+        for x in range(1, ordem):
+            o = open('saida.txt', 'a')
+            o.write('{} {}\n'.format(x, y[x]))
+            o.close()
+        for x in range(ordem, pas + 1):
+            y[x] = y[x - 1] + h * aplica_bf7_fyt(y[x - 1], y[x - 2], y[x - 3], y[x - 4], y[x - 5], y[x - 6], y[x - 7],
+                                                 t0 - 1 * h, t0 - 2 * h, t0 - 3 * h, t0 - 4 * h, t0 - 5 * h, t0 - 6 * h,
+                                                 t0 - 7 * h,
+                                                 k)
+            o = open('saida.txt', 'a')
+            o.write('{} {}\n'.format(x, y[x]))
+            o.close()
+            t0 = t0 + h
+    if ordem == 8:
+        o = open('saida.txt', 'a')
+        o.write('0 {}\n'.format(y[0]))
+        o.close()
+        for x in range(1, ordem):
+            o = open('saida.txt', 'a')
+            o.write('{} {}\n'.format(x, y[x]))
+            o.close()
+        for x in range(ordem, pas + 1):
+            y[x] = y[x - 1] + h * aplica_bf8_fyt(y[x - 1], y[x - 2], y[x - 3], y[x - 4], y[x - 5], y[x - 6], y[x - 7],
+                                                 y[x - 8],
+                                                 t0 - 1 * h, t0 - 2 * h, t0 - 3 * h, t0 - 4 * h, t0 - 5 * h, t0 - 6 * h,
+                                                 t0 - 7 * h,
+                                                 t0 - 8 * h, k)
+            o = open('saida.txt', 'a')
+            o.write('{} {}\n'.format(x, y[x]))
+            o.close()
+            t0 = t0 + h
     return
 
 
@@ -209,122 +389,18 @@ def aplica_bf8_fyt(y7, y6, y5, y4, y3, y2, y1, y0, t7, t6, t5, t4, t3, t2, t1, t
            - (5257 / 17280) * aplica_fyt(y0, t0, fn)
 
 
-def prep_param_to_bashforth(met, y0, y, t, h, pas, func, ordem):
-    ordem = int(ordem)
-    ys = list(range(ordem + 1))
-    ys[0] = str(y0)
-    for x in range(ordem):
-        ys[x + 1] = str(y[x])
-    t = str(t)
-    h = str(h)
-    pas = str(pas)
-    func = str(func)
-    param_input = str(met)
-    for x in range(ordem):
-        param_input = param_input + ' ' + ys[x]
-    ordem = str(ordem)
-    param_input = param_input + ' ' + t + ' ' + h + ' ' + pas + ' ' + func + ' ' + ordem
-    return param_input
-
-
-def adam_bashforth_execute_out(param_bash):
-    [t0, h, pas, func, ordem] = param_bash.split()[-5:]
-    t0 = float(t0)
-    h = float(h)
-    pas = int(pas)
-    k = parse_expr(func)
-    ordem = int(ordem)
-    y = list(range(pas + 1))
-    for x in range(ordem):
-        y[x] = float(param_bash.split()[1 + x])
-    print('y( {} ) = {}\nh = {}'.format(t0, y[0], h))
-    t0 = t0 + ordem * h
-    if ordem == 1:
-        print('0 {}'.format(y[0]))
-        for x in range(ordem, pas + 1):
-            y[x] = calc_eul(y[x - 1], t0 - 1 * h, h, k)
-            print('{} {}'.format(x, y[x]))
-            t0 = t0 + h
-    if ordem == 2:
-        print('0 {}'.format(y[0]))
-        for x in range(1, ordem):
-            print('{} {}'.format(x, y[x]))
-        for x in range(ordem, pas + 1):
-            y[x] = y[x - 1] + h * aplica_bf2_fyt(y[x - 1], y[x - 2],
-                                                 t0 - 1 * h, t0 - 2 * h, k)
-            print('{} {}'.format(x, y[x]))
-            t0 = t0 + h
-    if ordem == 3:
-        print('0 {}'.format(y[0]))
-        for x in range(1, ordem):
-            print('{} {}'.format(x, y[x]))
-        for x in range(ordem, pas + 1):
-            y[x] = y[x - 1] + h * aplica_bf3_fyt(y[x - 1], y[x - 2], y[x - 3],
-                                                 t0 - 1 * h, t0 - 2 * h, t0 - 3 * h, k)
-            print('{} {}'.format(x, y[x]))
-            t0 = t0 + h
-    if ordem == 4:
-        print('0 {}'.format(y[0]))
-        for x in range(1, ordem):
-            print('{} {}'.format(x, y[x]))
-        for x in range(ordem, pas + 1):
-            y[x] = y[x - 1] + h * aplica_bf4_fyt(y[x - 1], y[x - 2], y[x - 3], y[x - 4],
-                                                 t0 - 1 * h, t0 - 2 * h, t0 - 3 * h, t0 - 4 * h, k)
-            print('{} {}'.format(x, y[x]))
-            t0 = t0 + h
-    if ordem == 5:
-        print('0 {}'.format(y[0]))
-        for x in range(1, ordem):
-            print('{} {}'.format(x, y[x]))
-        for x in range(ordem, pas + 1):
-            y[x] = y[x - 1] + h * aplica_bf5_fyt(y[x - 1], y[x - 2], y[x - 3], y[x - 4], y[x - 5],
-                                                 t0 - 1 * h, t0 - 2 * h, t0 - 3 * h, t0 - 4 * h, t0 - 5 * h, k)
-            print('{} {}'.format(x, y[x]))
-            t0 = t0 + h
-    if ordem == 6:
-        print('0 {}'.format(y[0]))
-        for x in range(1, ordem):
-            print('{} {}'.format(x, y[x]))
-        for x in range(ordem, pas + 1):
-            y[x] = y[x - 1] + h * aplica_bf6_fyt(y[x - 1], y[x - 2], y[x - 3], y[x - 4], y[x - 5], y[x - 6],
-                                                 t0 - 1 * h, t0 - 2 * h, t0 - 3 * h, t0 - 4 * h, t0 - 5 * h, t0 - 6 * h,
-                                                 k)
-            print('{} {}'.format(x, y[x]))
-            t0 = t0 + h
-    if ordem == 7:
-        print('0 {}'.format(y[0]))
-        for x in range(1, ordem):
-            print('{} {}'.format(x, y[x]))
-        for x in range(ordem, pas + 1):
-            y[x] = y[x - 1] + h * aplica_bf7_fyt(y[x - 1], y[x - 2], y[x - 3], y[x - 4], y[x - 5], y[x - 6], y[x - 7],
-                                                 t0 - 1 * h, t0 - 2 * h, t0 - 3 * h, t0 - 4 * h, t0 - 5 * h, t0 - 6 * h,
-                                                 t0 - 7 * h,
-                                                 k)
-            print('{} {}'.format(x, y[x]))
-            t0 = t0 + h
-    if ordem == 8:
-        print('0 {}'.format(y[0]))
-        for x in range(1, ordem):
-            print('{} {}'.format(x, y[x]))
-        for x in range(ordem, pas + 1):
-            y[x] = y[x - 1] + h * aplica_bf8_fyt(y[x - 1], y[x - 2], y[x - 3], y[x - 4], y[x - 5], y[x - 6], y[x - 7],
-                                                 y[x - 8],
-                                                 t0 - 1 * h, t0 - 2 * h, t0 - 3 * h, t0 - 4 * h, t0 - 5 * h, t0 - 6 * h,
-                                                 t0 - 7 * h,
-                                                 t0 - 8 * h, k)
-            print('{} {}'.format(x, y[x]))
-            t0 = t0 + h
-    return
-
-
 def adam_bashforth(entrada_adam_bashforth):
-    print('Metodo Adan-Bashforth')
+    o = open('saida.txt', 'a')
+    o.write('Metodo Adan-Bashforth\n')
+    o.close()
     adam_bashforth_execute_out(entrada_adam_bashforth)
     return
 
 
 def adam_bashforth_by_euler(entrada_adam_bashforth_euler):
-    print('Metodo Adan-Bashforth por Euler')
+    o = open('saida.txt', 'a')
+    o.write('Metodo Adan-Bashforth por Euler\n')
+    o.close()
     [met, y0, t0, h, pas, func, ordem] = entrada_adam_bashforth_euler.split()
     yns = euler_retorno_n_primeiros(entrada_adam_bashforth_euler)
     orded_param = prep_param_to_bashforth(met, y0, yns, t0, h, pas, func, ordem)
@@ -333,7 +409,9 @@ def adam_bashforth_by_euler(entrada_adam_bashforth_euler):
 
 
 def adam_bashforth_by_euler_inverso(entrada_adam_bashforth_euler_inverso):
-    print('Metodo Adan-Bashforth por Euler Inverso')
+    o = open('saida.txt', 'a')
+    o.write('Metodo Adan-Bashforth por Euler Inverso\n')
+    o.close()
     [met, y0, t0, h, pas, func, ordem] = entrada_adam_bashforth_euler_inverso.split()
     yns = euler_inverso_retorno_n_primeiros(entrada_adam_bashforth_euler_inverso)
     orded_param = prep_param_to_bashforth(met, y0, yns, t0, h, pas, func, ordem)
@@ -342,7 +420,9 @@ def adam_bashforth_by_euler_inverso(entrada_adam_bashforth_euler_inverso):
 
 
 def adam_bashforth_by_euler_aprimorado(entrada_adam_bashforth_euler_apri):
-    print('Metodo Adan-Bashforth por Euler Aprimorado')
+    o = open('saida.txt', 'a')
+    o.write('Metodo Adan-Bashforth por Euler Aprimorado\n')
+    o.close()
     [met, y0, t0, h, pas, func, ordem] = entrada_adam_bashforth_euler_apri.split()
     yns = euler_apri_retorno_n_primeiros(entrada_adam_bashforth_euler_apri)
     orded_param = prep_param_to_bashforth(met, y0, yns, t0, h, pas, func, ordem)
@@ -351,7 +431,9 @@ def adam_bashforth_by_euler_aprimorado(entrada_adam_bashforth_euler_apri):
 
 
 def adam_bashforth_by_runge_kutta(entrada_adam_bashforth_runge_kutta):
-    print('Metodo Adan-Bashforth por Runge-Kutta')
+    o = open('saida.txt', 'a')
+    o.write('Metodo Adan-Bashforth por Runge-Kutta\n')
+    o.close()
     [met, y0, t0, h, pas, func, ordem] = entrada_adam_bashforth_runge_kutta.split()
     yns = runge_retorno_n_primeiros(entrada_adam_bashforth_runge_kutta)
     orded_param = prep_param_to_bashforth(met, y0, yns, t0, h, pas, func, ordem)
@@ -387,85 +469,131 @@ def adam_multon_execute_out(param_multon):
     y = list(range(pas + 1))
     for x in range(ordem - 1):
         y[x] = float(param_multon.split()[1 + x])
-    print('y( {} ) = {}\nh = {}'.format(t0, y[0], h))
+    o = open('saida.txt', 'a')
+    o.write('y( {} ) = {}\nh = {}\n'.format(t0, y[0], h))
+    o.close()
     t0 = t0 + (ordem - 1) * h
     if ordem == 1:
         for x in range(ordem - 1, pas + 1):
             y[x] = calc_eul_inv(y[x - 1], t0, h, k)
-            print('{} {}'.format(x, y[x]))
+            o = open('saida.txt', 'a')
+            o.write('{} {}\n'.format(x, y[x]))
+            o.close()
             t0 = t0 + h
     if ordem == 2:
-        print('0 {}'.format(y[0]))
+        o = open('saida.txt', 'a')
+        o.write('0 {}\n'.format(y[0]))
+        o.close()
         for x in range(1, ordem - 1):
-            print('{} {}'.format(x, y[x]))
+            o = open('saida.txt', 'a')
+            o.write('{} {}\n'.format(x, y[x]))
+            o.close()
         for x in range(ordem - 1, pas + 1):
             y[x] = y[x - 1] + h * aplica_mt2_fyt(calc_eul(y[x - 1], t0 - 1 * h, h, k),
                                                  y[x - 1],
                                                  t0, t0 - 1 * h, k)
-            print('{} {}'.format(x, y[x]))
+            o = open('saida.txt', 'a')
+            o.write('{} {}\n'.format(x, y[x]))
+            o.close()
             t0 = t0 + h
     if ordem == 3:
-        print('0 {}'.format(y[0]))
+        o = open('saida.txt', 'a')
+        o.write('0 {}\n'.format(y[0]))
+        o.close()
         for x in range(1, ordem - 1):
-            print('{} {}'.format(x, y[x]))
+            o = open('saida.txt', 'a')
+            o.write('{} {}\n'.format(x, y[x]))
+            o.close()
         for x in range(ordem - 1, pas + 1):
             y[x] = y[x - 1] + h * aplica_mt3_fyt(calc_eul(y[x - 1], t0 - 1 * h, h, k),
                                                  y[x - 1], y[x - 2],
                                                  t0, t0 - 1 * h, t0 - 2 * h, k)
-            print('{} {}'.format(x, y[x]))
+            o = open('saida.txt', 'a')
+            o.write('{} {}\n'.format(x, y[x]))
+            o.close()
             t0 = t0 + h
     if ordem == 4:
-        print('0 {}'.format(y[0]))
+        o = open('saida.txt', 'a')
+        o.write('0 {}\n'.format(y[0]))
+        o.close()
         for x in range(1, ordem - 1):
-            print('{} {}'.format(x, y[x]))
+            o = open('saida.txt', 'a')
+            o.write('{} {}\n'.format(x, y[x]))
+            o.close()
         for x in range(ordem - 1, pas + 1):
             y[x] = y[x - 1] + h * aplica_mt4_fyt(calc_eul(y[x - 1], t0 - 1 * h, h, k),
                                                  y[x - 1], y[x - 2], y[x - 3],
                                                  t0, t0 - 1 * h, t0 - 2 * h, t0 - 3 * h, k)
-            print('{} {}'.format(x, y[x]))
+            o = open('saida.txt', 'a')
+            o.write('{} {}\n'.format(x, y[x]))
+            o.close()
             t0 = t0 + h
     if ordem == 5:
-        print('0 {}'.format(y[0]))
+        o = open('saida.txt', 'a')
+        o.write('0 {}\n'.format(y[0]))
+        o.close()
         for x in range(1, ordem - 1):
-            print('{} {}'.format(x, y[x]))
+            o = open('saida.txt', 'a')
+            o.write('{} {}\n'.format(x, y[x]))
+            o.close()
         for x in range(ordem - 1, pas + 1):
             y[x] = y[x - 1] + h * aplica_mt5_fyt(calc_eul(y[x - 1], t0 - 1 * h, h, k),
                                                  y[x - 1], y[x - 2], y[x - 3], y[x - 4],
                                                  t0, t0 - 1 * h, t0 - 2 * h, t0 - 3 * h, t0 - 4 * h, k)
-            print('{} {}'.format(x, y[x]))
+            o = open('saida.txt', 'a')
+            o.write('{} {}\n'.format(x, y[x]))
+            o.close()
             t0 = t0 + h
     if ordem == 6:
-        print('0 {}'.format(y[0]))
+        o = open('saida.txt', 'a')
+        o.write('0 {}\n'.format(y[0]))
+        o.close()
         for x in range(1, ordem - 1):
-            print('{} {}'.format(x, y[x]))
+            o = open('saida.txt', 'a')
+            o.write('{} {}\n'.format(x, y[x]))
+            o.close()
         for x in range(ordem - 1, pas + 1):
             y[x] = y[x - 1] + h * aplica_mt6_fyt(calc_eul(y[x - 1], t0 - 1 * h, h, k),
                                                  y[x - 1], y[x - 2], y[x - 3], y[x - 4], y[x - 5],
                                                  t0, t0 - 1 * h, t0 - 2 * h, t0 - 3 * h, t0 - 4 * h, t0 - 5 * h, k)
-            print('{} {}'.format(x, y[x]))
+            o = open('saida.txt', 'a')
+            o.write('{} {}\n'.format(x, y[x]))
+            o.close()
             t0 = t0 + h
     if ordem == 7:
-        print('0 {}'.format(y[0]))
+        o = open('saida.txt', 'a')
+        o.write('0 {}\n'.format(y[0]))
+        o.close()
         for x in range(1, ordem - 1):
-            print('{} {}'.format(x, y[x]))
+            o = open('saida.txt', 'a')
+            o.write('{} {}\n'.format(x, y[x]))
+            o.close()
         for x in range(ordem - 1, pas + 1):
             y[x] = y[x - 1] + h * aplica_mt7_fyt(calc_eul(y[x - 1], t0 - 1 * h, h, k),
                                                  y[x - 1], y[x - 2], y[x - 3], y[x - 4], y[x - 5], y[x - 6],
                                                  t0, t0 - 1 * h, t0 - 2 * h, t0 - 3 * h, t0 - 4 * h, t0 - 5 * h,
                                                  t0 - 6 * h, k)
-            print('{} {}'.format(x, y[x]))
+            o = open('saida.txt', 'a')
+            o.write('{} {}\n'.format(x, y[x]))
+            o.close()
             t0 = t0 + h
     if ordem == 8:
-        print('0 {}'.format(y[0]))
+        o = open('saida.txt', 'a')
+        o.write('0 {}\n'.format(y[0]))
+        o.close()
         for x in range(1, ordem - 1):
-            print('{} {}'.format(x, y[x]))
+            o = open('saida.txt', 'a')
+            o.write('{} {}\n'.format(x, y[x]))
+            o.close()
         for x in range(ordem - 1, pas + 1):
             y[x] = y[x - 1] + h * aplica_mt8_fyt(calc_eul(y[x - 1], t0 - 1 * h, h, k),
                                                  y[x - 1], y[x - 2], y[x - 3], y[x - 4], y[x - 5], y[x - 6], y[x - 7],
                                                  t0, t0 - 1 * h, t0 - 2 * h, t0 - 3 * h, t0 - 4 * h, t0 - 5 * h,
                                                  t0 - 6 * h, t0 - 7 * h,
                                                  k)
-            print('{} {}'.format(x, y[x]))
+            o = open('saida.txt', 'a')
+            o.write('{} {}\n'.format(x, y[x]))
+            o.close()
             t0 = t0 + h
     return
 
@@ -525,13 +653,17 @@ def aplica_mt8_fyt(y7, y6, y5, y4, y3, y2, y1, y0, t7, t6, t5, t4, t3, t2, t1, t
 
 
 def adam_multon(entrada_adam_multon):
-    print('Metodo Adan-Multon')
+    o = open('saida.txt', 'a')
+    o.write('Metodo Adan-Multon\n')
+    o.close()
     adam_multon_execute_out(entrada_adam_multon)
     return
 
 
 def adam_multon_by_euler(entrada_adam_multon_euler):
-    print('Metodo Adan-Multon por Euler')
+    o = open('saida.txt', 'a')
+    o.write('Metodo Adan-Multon por Euler\n')
+    o.close()
     [met, y0, t0, h, pas, func, ordem] = entrada_adam_multon_euler.split()
     yns = euler_retorno_n_primeiros(entrada_adam_multon_euler)
     orded_param = prep_param_to_multon_and_form_inv(met, y0, yns, t0, h, pas, func, ordem)
@@ -540,7 +672,9 @@ def adam_multon_by_euler(entrada_adam_multon_euler):
 
 
 def adam_multon_by_euler_inverso(entrada_adam_multon_euler_inverso):
-    print('Metodo Adan-Multon por Euler Inverso')
+    o = open('saida.txt', 'a')
+    o.write('Metodo Adan-Multon por Euler Inverso\n')
+    o.close()
     [met, y0, t0, h, pas, func, ordem] = entrada_adam_multon_euler_inverso.split()
     yns = euler_inverso_retorno_n_primeiros(entrada_adam_multon_euler_inverso)
     orded_param = prep_param_to_multon_and_form_inv(met, y0, yns, t0, h, pas, func, ordem)
@@ -549,7 +683,9 @@ def adam_multon_by_euler_inverso(entrada_adam_multon_euler_inverso):
 
 
 def adam_multon_by_euler_aprimorado(entrada_adam_multon_euler_apri):
-    print('Metodo Adan-Multon por Euler Aprimorado')
+    o = open('saida.txt', 'a')
+    o.write('Metodo Adan-Multon por Euler Aprimorado\n')
+    o.close()
     [met, y0, t0, h, pas, func, ordem] = entrada_adam_multon_euler_apri.split()
     yns = euler_apri_retorno_n_primeiros(entrada_adam_multon_euler_apri)
     orded_param = prep_param_to_multon_and_form_inv(met, y0, yns, t0, h, pas, func, ordem)
@@ -558,7 +694,9 @@ def adam_multon_by_euler_aprimorado(entrada_adam_multon_euler_apri):
 
 
 def adam_multon_by_runge_kutta(entrada_adam_multon_runge_kutta):
-    print('Metodo Adan-Multon por Runge-Kutta')
+    o = open('saida.txt', 'a')
+    o.write('Metodo Adan-Multon por Runge-Kutta\n')
+    o.close()
     [met, y0, t0, h, pas, func, ordem] = entrada_adam_multon_runge_kutta.split()
     yns = runge_retorno_n_primeiros(entrada_adam_multon_runge_kutta)
     orded_param = prep_param_to_multon_and_form_inv(met, y0, yns, t0, h, pas, func, ordem)
@@ -576,55 +714,93 @@ def form_inv_execute_out(param_multon):
     y = list(range(pas + 1))
     for x in range(ordem - 1):
         y[x] = float(param_multon.split()[1 + x])
-    print('y( {} ) = {}\nh = {}'.format(t0, y[0], h))
+    o = open('saida.txt', 'a')
+    o.write('y( {} ) = {}\nh = {}\n'.format(t0, y[0], h))
+    o.close()
     t0 = t0 + (ordem - 1) * h
     if ordem == 2:
-        print('0 {}'.format(y[0]))
+        o = open('saida.txt', 'a')
+        o.write('0 {}\n'.format(y[0]))
+        o.close()
         for x in range(1, ordem - 1):
-            print('{} {}'.format(x, y[x]))
+            o = open('saida.txt', 'a')
+            o.write('{} {}\n'.format(x, y[x]))
+            o.close()
         for x in range(ordem - 1, pas + 1):
             y[x] = calc_eul_inv(y[x - 1], t0 - h, h, k)
-            print('{} {}'.format(x, y[x]))
+            o = open('saida.txt', 'a')
+            o.write('{} {}\n'.format(x, y[x]))
+            o.close()
             t0 = t0 + h
     if ordem == 3:
-        print('0 {}'.format(y[0]))
+        o = open('saida.txt', 'a')
+        o.write('0 {}\n'.format(y[0]))
+        o.close()
         for x in range(1, ordem - 1):
-            print('{} {}'.format(x, y[x]))
+            o = open('saida.txt', 'a')
+            o.write('{} {}\n'.format(x, y[x]))
+            o.close()
         for x in range(ordem - 1, pas + 1):
             y[x] = aplica_fi2_fyt(y[x - 1], y[x - 2], t0 - h, h, k)
-            print('{} {}'.format(x, y[x]))
+            o = open('saida.txt', 'a')
+            o.write('{} {}\n'.format(x, y[x]))
+            o.close()
             t0 = t0 + h
     if ordem == 4:
-        print('0 {}'.format(y[0]))
+        o = open('saida.txt', 'a')
+        o.write('0 {}\n'.format(y[0]))
+        o.close()
         for x in range(1, ordem - 1):
-            print('{} {}'.format(x, y[x]))
+            o = open('saida.txt', 'a')
+            o.write('{} {}\n'.format(x, y[x]))
+            o.close()
         for x in range(ordem - 1, pas + 1):
             y[x] = aplica_fi3_fyt(y[x - 1], y[x - 2], y[x - 3], t0 - h, h, k)
-            print('{} {}'.format(x, y[x]))
+            o = open('saida.txt', 'a')
+            o.write('{} {}\n'.format(x, y[x]))
+            o.close()
             t0 = t0 + h
     if ordem == 5:
-        print('0 {}'.format(y[0]))
+        o = open('saida.txt', 'a')
+        o.write('0 {}\n'.format(y[0]))
+        o.close()
         for x in range(1, ordem - 1):
-            print('{} {}'.format(x, y[x]))
+            o = open('saida.txt', 'a')
+            o.write('{} {}\n'.format(x, y[x]))
+            o.close()
         for x in range(ordem - 1, pas + 1):
             y[x] = aplica_fi4_fyt(y[x - 1], y[x - 2], y[x - 3], y[x - 4], t0 - h, h, k)
-            print('{} {}'.format(x, y[x]))
+            o = open('saida.txt', 'a')
+            o.write('{} {}\n'.format(x, y[x]))
+            o.close()
             t0 = t0 + h
     if ordem == 6:
-        print('0 {}'.format(y[0]))
+        o = open('saida.txt', 'a')
+        o.write('0 {}\n'.format(y[0]))
+        o.close()
         for x in range(1, ordem - 1):
-            print('{} {}'.format(x, y[x]))
+            o = open('saida.txt', 'a')
+            o.write('{} {}\n'.format(x, y[x]))
+            o.close()
         for x in range(ordem - 1, pas + 1):
             y[x] = aplica_fi5_fyt(y[x - 1], y[x - 2], y[x - 3], y[x - 4], y[x - 5], t0 - h, h, k)
-            print('{} {}'.format(x, y[x]))
+            o = open('saida.txt', 'a')
+            o.write('{} {}\n'.format(x, y[x]))
+            o.close()
             t0 = t0 + h
     if ordem == 7:
-        print('0 {}'.format(y[0]))
+        o = open('saida.txt', 'a')
+        o.write('0 {}\n'.format(y[0]))
+        o.close()
         for x in range(1, ordem - 1):
-            print('{} {}'.format(x, y[x]))
+            o = open('saida.txt', 'a')
+            o.write('{} {}\n'.format(x, y[x]))
+            o.close()
         for x in range(ordem - 1, pas + 1):
             y[x] = aplica_fi6_fyt(y[x - 1], y[x - 2], y[x - 3], y[x - 4], y[x - 5], y[x - 6], t0 - h, h, k)
-            print('{} {}'.format(x, y[x]))
+            o = open('saida.txt', 'a')
+            o.write('{} {}\n'.format(x, y[x]))
+            o.close()
             t0 = t0 + h
     return
 
@@ -660,13 +836,17 @@ def aplica_fi6_fyt(y5, y4, y3, y2, y1, y0, t5, h, fn):
 
 
 def formula_inversa(entrada_formula_inversa):
-    print('Metodo Formula Inversa de Diferenciacao')
+    o = open('saida.txt', 'a')
+    o.write('Metodo Formula Inversa de Diferenciacao\n')
+    o.close()
     form_inv_execute_out(entrada_formula_inversa)
     return
 
 
 def formula_inversa_by_euler(entrada_formula_inversa_euler):
-    print('Metodo Formula Inversa de Diferenciacao por Euler')
+    o = open('saida.txt', 'a')
+    o.write('Metodo Formula Inversa de Diferenciacao por Euler\n')
+    o.close()
     [met, y0, t0, h, pas, func, ordem] = entrada_formula_inversa_euler.split()
     yns = euler_retorno_n_primeiros(entrada_formula_inversa_euler)
     orded_param = prep_param_to_multon_and_form_inv(met, y0, yns, t0, h, pas, func, ordem)
@@ -675,7 +855,9 @@ def formula_inversa_by_euler(entrada_formula_inversa_euler):
 
 
 def formula_inversa_by_euler_inverso(entrada_formula_inversa_euler_inversa):
-    print('Metodo Formula Inversa de Diferenciacao por Euler Inverso')
+    o = open('saida.txt', 'a')
+    o.write('Metodo Formula Inversa de Diferenciacao por Euler Inverso\n')
+    o.close()
     [met, y0, t0, h, pas, func, ordem] = entrada_formula_inversa_euler_inversa.split()
     yns = euler_inverso_retorno_n_primeiros(entrada_formula_inversa_euler_inversa)
     orded_param = prep_param_to_multon_and_form_inv(met, y0, yns, t0, h, pas, func, ordem)
@@ -684,7 +866,9 @@ def formula_inversa_by_euler_inverso(entrada_formula_inversa_euler_inversa):
 
 
 def formula_inversa_by_euler_aprimorado(entrada_formula_inversa_euler_aprimorado):
-    print('Metodo Formula Inversa de Diferenciacao por Euler Aprimorado')
+    o = open('saida.txt', 'a')
+    o.write('Metodo Formula Inversa de Diferenciacao por Euler Aprimorado\n')
+    o.close()
     [met, y0, t0, h, pas, func, ordem] = entrada_formula_inversa_euler_aprimorado.split()
     yns = euler_apri_retorno_n_primeiros(entrada_formula_inversa_euler_aprimorado)
     orded_param = prep_param_to_multon_and_form_inv(met, y0, yns, t0, h, pas, func, ordem)
@@ -693,7 +877,9 @@ def formula_inversa_by_euler_aprimorado(entrada_formula_inversa_euler_aprimorado
 
 
 def formula_inversa_by_runge_kutta(entrada_formula_inversa_runge_kutta):
-    print('Metodo Formula Inversa de Diferenciacao por Runge-Kutta')
+    o = open('saida.txt', 'a')
+    o.write('Metodo Formula Inversa de Diferenciacao por Runge-Kutta\n')
+    o.close()
     [met, y0, t0, h, pas, func, ordem] = entrada_formula_inversa_runge_kutta.split()
     yns = runge_retorno_n_primeiros(entrada_formula_inversa_runge_kutta)
     orded_param = prep_param_to_multon_and_form_inv(met, y0, yns, t0, h, pas, func, ordem)
@@ -742,17 +928,24 @@ def what_method(entrada):
     elif metodo == 'formula_inversa_by_runge_kutta':
         formula_inversa_by_runge_kutta(entrada)
     else:
-        print('Metodo não reconhecido')
+        o = open('saida.txt', 'a')
+        o.write('Metodo não reconhecido\n')
+        o.close()
     return
 
 
 def main():
     i = open('entrada.txt', 'r')
+    o = open('saida.txt', 'w')
     for line in i:
+        o = open('saida.txt', 'a')
+        o.write('\n')
+        o.close()
         what_method(line)
     i.close()
-    print('///')
+    o.close()
 
 
 if __name__ == '__main__':
     main()
+
