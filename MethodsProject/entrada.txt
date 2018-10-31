@@ -1,4 +1,4 @@
-euler 0 0 20 1-t+4*y
+euler 0 0 0.01 20 1-t+4*y
 euler_inverso 0 0 0.1 20 1-t+4*y
 euler_aprimorado 0 0 0.1 20 1-t+4*y
 runge_kutta 0 0 0.1 20 1-t+4*y
@@ -37,4 +37,3 @@ formula_inversa_by_euler 1.0 0 0.1 20 1-t+4*y 2
 formula_inversa_by_euler 1.0 0 0.1 20 1-t+4*y 3
 formula_inversa_by_euler 1.0 0 0.1 20 1-t+4*y 4
 formula_inversa_by_euler 1.0 0 0.1 20 1-t+4*y 7
-

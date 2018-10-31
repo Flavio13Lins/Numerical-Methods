@@ -25,11 +25,11 @@ def euler_retorno_n_primeiros(param):
 
 
 def euler(entr_euler):
-    [y0, t0, pas, func] = entr_euler.split()[1:]
+    [y0, t0, h, pas, func] = entr_euler.split()[1:]
     o = open('saida.txt', 'a')
     o.write('Metodo de Euler\n')
     o.close()
-    h = 0.1
+    h = float(h)
     y0 = float(y0)
     t0 = float(t0)
     pas = int(pas)
