@@ -51,6 +51,7 @@ def calc_eul_inv(y, t, h, fn):
 
 
 def euler_inverso_retorno_n_primeiros(param):
+    # exemplo de entrada
     # adam_bashforth_by_euler_inverso 0 0 0.1 20 1-t+4*y 6
     [y0, t0, h, _, func, ordem] = param.split()[1:]
     ordem = int(ordem)
@@ -83,8 +84,9 @@ def euler_inverso(entr_euler_inv):
         o = open('saida.txt', 'a')
         o.write('{} {}\n'.format(x, y0))
         o.close()
+        # detalhe que depende da aproximação desejada
         # y0 = sympy.solvers.solve(y0 + (h * fn.subs(t, t0+h)) - 'y', 'y')[0]  # aproximaçao melhor como do livro
-        y0 = calc_eul_inv(y0, t0, h, fn)  # aproximaçao como pdf dos monitores
+        y0 = calc_eul_inv(y0, t0, h, fn)  # aproximação como pdf dos monitores
         t0 = t0 + h
     return
 
@@ -598,6 +600,7 @@ def adam_multon_execute_out(param_multon):
     return
 
 
+#  aplicando na formula de multon dependendo da quantidade de y's
 def aplica_mt2_fyt(y1, y0, t1, t0, fn):
     return (1 / 2) * aplica_fyt(y1, t1, fn) \
            + (1 / 2) * aplica_fyt(y0, t0, fn)
@@ -652,6 +655,7 @@ def aplica_mt8_fyt(y7, y6, y5, y4, y3, y2, y1, y0, t7, t6, t5, t4, t3, t2, t1, t
            + (275 / 24192) * aplica_fyt(y0, t0, fn)
 
 
+# chamadas da funções
 def adam_multon(entrada_adam_multon):
     o = open('saida.txt', 'a')
     o.write('Metodo Adan-Multon\n')
@@ -704,6 +708,7 @@ def adam_multon_by_runge_kutta(entrada_adam_multon_runge_kutta):
     return
 
 
+#  formando saida da fórmula inversa
 def form_inv_execute_out(param_multon):
     [t0, h, pas, func, ordem] = param_multon.split()[-5:]
     t0 = float(t0)
@@ -805,6 +810,7 @@ def form_inv_execute_out(param_multon):
     return
 
 
+#  aplicando valores dependendo do numero de y's para formula inversa
 def aplica_fi2_fyt(y1, y0, t1, h, fn):
     return (1 / 3) * (2 * h * aplica_fyt(calc_eul(y1, t1, h, fn),
                                          t1 + h, fn)
@@ -835,6 +841,7 @@ def aplica_fi6_fyt(y5, y4, y3, y2, y1, y0, t5, h, fn):
                         + 360 * y5 - 450 * y4 + 400 * y3 - 225 * y2 + 72 * y1 - 10 * y0)
 
 
+#  formulas
 def formula_inversa(entrada_formula_inversa):
     o = open('saida.txt', 'a')
     o.write('Metodo Formula Inversa de Diferenciacao\n')
@@ -886,7 +893,7 @@ def formula_inversa_by_runge_kutta(entrada_formula_inversa_runge_kutta):
     form_inv_execute_out(orded_param)
     return
 
-
+#  detectando método que vai ser utilizado no cálculo
 def what_method(entrada):
     metodo = entrada.split()[0]
     if metodo == 'euler':
